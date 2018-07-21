@@ -15,10 +15,10 @@ class Config {
   static get default() {
     return {
       autoHarvest: false,
-      autoHarvestCheckBuffs: false,
+      autoHarvestCheckCpSMult: false,
       autoHarvestMiniCpSMult: { value: 1, min: 0 },
       autoPlant: false,
-      autoPlantCheckBuffs: false,
+      autoPlantCheckCpSMult: false,
       autoPlantMaxiCpSMult: { value: 0, min: 0 },
       savedPlot: [],
     };
@@ -96,13 +96,13 @@ class Garden {
   static run(config) {
     this.forEachTile((x, y) => {
       if (config.autoHarvest &&
-          (!config.autoHarvestCheckBuffs ||
+          (!config.autoHarvestCheckCpSMult ||
           this.CpSMult >= config.autoHarvestMiniCpSMult.value)
         ) {
         this.harvest(x, y);
       }
       if (config.autoPlant &&
-          (!config.autoPlantCheckBuffs ||
+          (!config.autoPlantCheckCpSMult ||
           this.CpSMult <= config.autoPlantMaxiCpSMult.value) &&
           this.tileIsEmpty(x, y)
         ) {
@@ -154,39 +154,46 @@ class UI {
   padding-top: 0;
 }
 #cookieGardenHelper p {
-  font-size: 1.25em;
-}
-#cookieGardenHelper input[type=checkbox] {
-  transform: scale(1.25);
+  text-indent: 0;
+  padding-left: 0.7em;
 }
 #cookieGardenHelper input[type=number] {
   width: 3em;
 }
+#cookieGardenHelper a.toggleBtn:not(.off) .toggleBtnOff {
+  display: none;
+}
+#cookieGardenHelper a.toggleBtn.off .toggleBtnOn {
+  display: none;
+}
 `;
-  }
-
-  static checkbox(name, text, title, checked) {
-    let id = this.makeId(name);
-    return `<p>
-  <input type="checkbox" name="${name}" id="${id}"
-    ${checked ? 'checked' : ''}/>
-  <label for="${id}" title="${title}">${text}</label>
-</p>`;
   }
 
   static numberInput(name, text, title, options) {
     let id = this.makeId(name);
-    return `<p>
-  <input type="number" name="${name}" id="${id}" value="${options.value}"
-    ${options.min !== undefined ? `min="${options.min}"` : ''}
-    ${options.max !== undefined ? `max="${options.max}"` : ''} />
-  <label for="${id}" title="${title}">${text}</label>
-</p>`;
+    return `
+<input type="number" name="${name}" id="${id}" value="${options.value}"
+  ${options.min !== undefined ? `min="${options.min}"` : ''}
+  ${options.max !== undefined ? `max="${options.max}"` : ''} />
+<label for="${id}" title="${title}">${text}</label>`;
   }
 
-  static button(name, text, title) {
-    return `<a class="option" name="${name}" id="${this.makeId(name)}"
+  static button(name, text, title, toggle, active) {
+    if (toggle) {
+      return `<a class="toggleBtn option ${active ? '' : 'off'}" name="${name}"
+                 id="${this.makeId(name)}" title="${title}">
+        ${text}
+        <span class="toggleBtnOn">ON</span>
+        <span class="toggleBtnOff">OFF</span>
+      </a>`;
+    }
+    return `<a class="btn option" name="${name}" id="${this.makeId(name)}"
       title="${title}">${text}</a>`;
+  }
+
+  static toggleButton(name) {
+    let btn = doc.qSel(`#cookieGardenHelper a.toggleBtn[name=${name}]`);
+    btn.classList.toggle('off');
   }
 
   static build(config) {
@@ -198,36 +205,50 @@ class UI {
   <div id="cookieGardenHelperTools">
     <div class="cookieGardenHelperPanel">
       <h2>Auto-harvest</h2>
-      ${this.checkbox('autoHarvest', 'Activated', '', config.autoHarvest)}
-      ${this.checkbox(
-        'autoHarvestCheckBuffs', 'Check for buffs',
-        'Check for buffs before harvesting (see below)', config.autoHarvestCheckBuffs
-      )}
-      ${this.numberInput(
-        'autoHarvestMiniCpSMult', 'Mini CpS multiplier',
-        'Minimum CpS multiplier for the auto-harvest to happen',
-        config.autoHarvestMiniCpSMult
-      )}
+      <p>
+        ${this.button('autoHarvest', 'Activated', '', true, config.autoHarvest)}
+        ${this.button(
+          'autoHarvestCheckCpSMult', 'Check CpS mult',
+          'Check the CpS multiplier before harvesting (see below)', true,
+          config.autoHarvestCheckCpSMult
+        )}
+      </p>
+      <p>
+        ${this.numberInput(
+          'autoHarvestMiniCpSMult', 'Mini CpS multiplier',
+          'Minimum CpS multiplier for the auto-harvest to happen',
+          config.autoHarvestMiniCpSMult
+        )}
+      </p>
     </div>
     <div class="cookieGardenHelperPanel">
       <h2>Auto-plant</h2>
-      ${this.checkbox('autoPlant', 'Activated', '', config.autoPlant)}
-      ${this.checkbox(
-        'autoPlantCheckBuffs', 'Check for buffs',
-        'Check for buffs before planting (see below)', config.autoPlantCheckBuffs
-      )}
-      ${this.numberInput(
-        'autoPlantMaxiCpSMult', 'Maxi CpS multiplier',
-        'Maximum CpS multiplier for the auto-plant to happen',
-        config.autoPlantMaxiCpSMult
-      )}
-      ${this.button('savePlot', 'Save plot',
-      'Save the current plot; these seeds will be replanted later')}
+      <p>
+        ${this.button('autoPlant', 'Activated', '', true, config.autoPlant)}
+        ${this.button(
+          'autoPlantCheckCpSMult', 'Check CpS mult',
+          'Check the CpS multiplier before planting (see below)', true,
+          config.autoPlantCheckCpSMult
+        )}
+      </p>
+      <p>
+        ${this.numberInput(
+          'autoPlantMaxiCpSMult', 'Maxi CpS multiplier',
+          'Maximum CpS multiplier for the auto-plant to happen',
+          config.autoPlantMaxiCpSMult
+        )}
+      </p>
+      <p>
+        ${this.button('savePlot', 'Save plot',
+        'Save the current plot; these seeds will be replanted later')}
+      </p>
     </div>
     <div class="cookieGardenHelperPanel">
       <h2>Manual tools</h2>
-      ${this.button('fillGardenWithSelectedSeed', 'Plant selected seed',
-      'Plant the selected seed on all empty tiles')}
+      <p>
+        ${this.button('fillGardenWithSelectedSeed', 'Plant selected seed',
+        'Plant the selected seed on all empty tiles')}
+      </p>
     </div>
   </div>
 </div>`);
@@ -238,9 +259,7 @@ class UI {
 
     doc.qSelAll('#cookieGardenHelper input').forEach((input) => {
       input.onchange = (event) => {
-        if (input.type == 'checkbox') {
-          Main.handleChange(input.name, input.checked);
-        } else if (input.type == 'number') {
+        if (input.type == 'number') {
           let min = config[input.name].min;
           let max = config[input.name].max;
           if (min !== undefined && input.value < min) { input.value = min; }
@@ -250,7 +269,13 @@ class UI {
       };
     });
 
-    doc.qSelAll('#cookieGardenHelper a.option').forEach((a) => {
+    doc.qSelAll('#cookieGardenHelper a.toggleBtn').forEach((a) => {
+      a.onclick = (event) => {
+        Main.handleToggle(a.name);
+      };
+    });
+
+    doc.qSelAll('#cookieGardenHelper a.btn').forEach((a) => {
       a.onclick = (event) => {
         Main.handleClick(a.name);
       };
@@ -284,6 +309,12 @@ class Main {
       this.config[key] = value;
     }
     this.save();
+  }
+
+  static handleToggle(key) {
+    this.config[key] = !this.config[key];
+    this.save();
+    UI.toggleButton(key);
   }
 
   static handleClick(key) {
