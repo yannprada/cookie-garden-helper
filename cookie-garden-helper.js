@@ -193,7 +193,7 @@ class UI {
   static numberInput(name, text, title, options) {
     let id = this.makeId(name);
     return `
-<input type="number" name="${name}" id="${id}" value="${options.value}"
+<input type="number" name="${name}" id="${id}" value="${options.value}" step=0.5
   ${options.min !== undefined ? `min="${options.min}"` : ''}
   ${options.max !== undefined ? `max="${options.max}"` : ''} />
 <label for="${id}" title="${title}">${text}</label>`;
