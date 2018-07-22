@@ -238,9 +238,11 @@ class UI {
   <div id="cookieGardenHelperTitle" class="title">Cookie Garden Helper</div>
   <div id="cookieGardenHelperTools">
     <div class="cookieGardenHelperPanel">
-      <h2>Auto-harvest</h2>
+      <h2>
+        Auto-harvest
+        ${this.button('autoHarvest', '', '', true, config.autoHarvest)}
+      </h2>
       <p>
-        ${this.button('autoHarvest', 'Activated', '', true, config.autoHarvest)}
         ${this.button(
           'autoHarvestCheckCpSMult', 'Check CpS mult',
           'Check the CpS multiplier before harvesting (see below)', true,
@@ -256,9 +258,11 @@ class UI {
       </p>
     </div>
     <div class="cookieGardenHelperPanel">
-      <h2>Auto-plant</h2>
+      <h2>
+        Auto-plant
+        ${this.button('autoPlant', '', '', true, config.autoPlant)}
+      </h2>
       <p>
-        ${this.button('autoPlant', 'Activated', '', true, config.autoPlant)}
         ${this.button(
           'autoPlantCheckCpSMult', 'Check CpS mult',
           'Check the CpS multiplier before planting (see below)', true,
