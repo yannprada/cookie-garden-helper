@@ -15,6 +15,9 @@ class Config {
   static get default() {
     return {
       autoHarvest: false,
+      autoHarvestNewSeeds: true,
+      autoHarvestAvoidImmortals: true,
+      autoHarvestWeeds: true,
       autoHarvestCheckCpSMult: false,
       autoHarvestMiniCpSMult: { value: 1, min: 0 },
       autoPlant: false,
@@ -59,10 +62,18 @@ class Garden {
   static set selectedSeed(seedId) { this.minigame.seedSelected = seedId; }
   static get plot() { return this.minigame.plot; }
 
-  static getPlant(id) { return this.minigame.plantsById[id]; }
-  static getTile(x, y) { return this.minigame.getTile(x, y); }
+  static getPlant(id) { return this.minigame.plantsById[id - 1]; }
+  static getTile(x, y) {
+    let tile = this.minigame.getTile(x, y);
+    return { seedId: tile[0], age: tile[1] };
+  }
 
-  static tileIsEmpty(x, y) { return this.getTile(x, y)[0] == 0; }
+  static plantIsMature(tile) {
+    let plant = this.getPlant(tile.seedId);
+    return tile.age >= plant.mature;
+  }
+
+  static tileIsEmpty(x, y) { return this.getTile(x, y).seedId == 0; }
 
   static plantSeed(seedId, x, y) { this.minigame.useTool(seedId, x, y); }
 
@@ -76,14 +87,7 @@ class Garden {
     }
   }
 
-  static harvest(x, y) {
-    let [seedId, age] = this.getTile(x, y);
-    if (seedId > 0) {
-      if (age >= this.getPlant(seedId - 1).mature) {
-        this.minigame.harvest(x, y);
-      }
-    }
-  }
+  static harvest(x, y) { this.minigame.harvest(x, y); }
 
   static fillGardenWithSelectedSeed() {
     if (this.selectedSeed > -1) {
@@ -97,12 +101,26 @@ class Garden {
 
   static run(config) {
     this.forEachTile((x, y) => {
-      if (config.autoHarvest &&
-          (!config.autoHarvestCheckCpSMult ||
-          this.CpSMult >= config.autoHarvestMiniCpSMult.value)
-        ) {
-        this.harvest(x, y);
+      if (config.autoHarvest && !this.tileIsEmpty(x, y)) {
+        let tile = this.getTile(x, y);
+        let plant = this.getPlant(tile.seedId);
+
+        // I hope this below is correct :S
+        if (!plant.unlocked && this.plantIsMature(tile) &&
+            config.autoHarvestNewSeeds) {
+          this.harvest(x, y);
+        } else if( !(plant.immortal && config.autoHarvestAvoidImmortals)) {
+          if (plant.weed && config.autoHarvestWeeds) {
+            this.harvest(x, y);
+          } else if (this.plantIsMature(tile)) {
+            if (!config.autoHarvestCheckCpSMult ||
+                this.CpSMult >= config.autoHarvestMiniCpSMult.value) {
+              this.harvest(x, y);
+            }
+          }
+        }
       }
+
       if (config.autoPlant &&
           (!config.autoPlantCheckCpSMult ||
           this.CpSMult <= config.autoPlantMaxiCpSMult.value) &&
@@ -241,6 +259,27 @@ class UI {
         Auto-harvest
         ${this.button('autoHarvest', '', '', true, config.autoHarvest)}
       </h2>
+      <p>
+        ${this.button(
+          'autoHarvestNewSeeds', 'New seeds',
+          'Harvest new seeds as soon as they are mature', true,
+          config.autoHarvestNewSeeds
+        )}
+      </p>
+      <p>
+        ${this.button(
+          'autoHarvestAvoidImmortals', 'Avoid immortals',
+          'Do not harvest immortal plants', true,
+          config.autoHarvestAvoidImmortals
+        )}
+      </p>
+      <p>
+        ${this.button(
+          'autoHarvestWeeds', 'Remove weeds',
+          'Remove weeds as soon as they appear', true,
+          config.autoHarvestWeeds
+        )}
+      </p>
       <p>
         ${this.button(
           'autoHarvestCheckCpSMult', 'Check CpS mult',
