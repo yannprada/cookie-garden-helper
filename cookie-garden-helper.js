@@ -43,7 +43,7 @@ class Config {
 
 class Garden {
   static get minigame() { return Game.Objects['Farm'].minigame; }
-  static get active() { return this.minigame !== undefined; }
+  static get isActive() { return this.minigame !== undefined; }
 
   static get CpSMult() {
     var res = 1
@@ -69,7 +69,9 @@ class Garden {
   static forEachTile(callback) {
     for (let x=0; x<6; x++) {
       for (let y=0; y<6; y++) {
-        callback(x, y);
+        if (this.minigame.isTileUnlocked(x, y)) {
+          callback(x, y);
+        }
       }
     }
   }
@@ -166,6 +168,23 @@ class UI {
 #cookieGardenHelper a.toggleBtn.off .toggleBtnOn {
   display: none;
 }
+#cookieGardenHelper .warning {
+    padding: 1em;
+    font-size: 1.5em;
+    background-color: orange;
+    color: white;
+}
+#cookieGardenHelper .warning .closeWarning {
+    font-weight: bold;
+    float: right;
+    font-size: 2em;
+    line-height: 0.25em;
+    cursor: pointer;
+    transition: 0.3s;
+}
+#cookieGardenHelper .warning .closeWarning:hover {
+    color: black;
+}
 `;
   }
 
@@ -196,8 +215,21 @@ class UI {
     btn.classList.toggle('off');
   }
 
+  static createWarning(msg) {
+    doc.elId('row2').insertAdjacentHTML('beforebegin', `
+<div id="cookieGardenHelper">
+  <style>${this.css}</style>
+  <div class="warning">
+    <span class="closeWarning">&times;</span>
+    ${msg}
+  </div>
+</div>`);
+    doc.qSel('#cookieGardenHelper .closeWarning').onclick = (event) => {
+      doc.elId('cookieGardenHelper').remove();
+    };
+  }
+
   static build(config) {
-    let autoHarvest = config.autoHarvest;
     doc.elId('row2').insertAdjacentHTML('beforebegin', `
 <div id="cookieGardenHelper">
   <style>${this.css}</style>
@@ -327,5 +359,12 @@ class Main {
   }
 }
 
-if (Garden.active) { Main.init(); }
+if (Garden.isActive) {
+  Main.init();
+} else {
+  let msg = `You don't have a garden yet. This mod won't work without it!`;
+  console.log(msg);
+  UI.createWarning(msg);
+}
+
 }
