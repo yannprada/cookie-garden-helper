@@ -106,7 +106,8 @@ class Garden {
       if (config.autoPlant &&
           (!config.autoPlantCheckCpSMult ||
           this.CpSMult <= config.autoPlantMaxiCpSMult.value) &&
-          this.tileIsEmpty(x, y)
+          this.tileIsEmpty(x, y) &&
+          config.savedPlot.length > 0
         ) {
         let [seedId, age] = config.savedPlot[y][x];
         this.plantSeed(seedId - 1, x, y);
