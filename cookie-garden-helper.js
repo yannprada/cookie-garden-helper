@@ -32,9 +32,7 @@ class Config {
       this.save(this.default);
       return this.default;
     }
-    config = JSON.parse(config);
-    Object.assign(config, this.default);  // making sure new values are added
-    return config;
+    return Object.assign(this.default, JSON.parse(config));
   }
 
   static save(config) {
