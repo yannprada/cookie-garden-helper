@@ -1,4 +1,4 @@
-{
+
 const moduleName = 'cookieGardenHelper';
 
 const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1);
@@ -8,4 +8,12 @@ const doc = {
   elId: document.getElementById.bind(document),
   qSel: document.querySelector.bind(document),
   qSelAll: document.querySelectorAll.bind(document),
+}
+
+if (Garden.isActive) {
+  Main.init();
+} else {
+  let msg = `You don't have a garden yet. This mod won't work without it!`;
+  console.log(msg);
+  UI.createWarning(msg);
 }
