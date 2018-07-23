@@ -14,4 +14,4 @@ javascript: (function () {
 
 ## Screenshot
 
-![Screenshot - UI of the mod cookie-garden-helper](/cookie-garden-helper.png?raw=true "UI")
+![Screenshot - UI of the mod cookie-garden-helper](/img/cookie-garden-helper.png?raw=true "UI")
