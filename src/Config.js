@@ -8,6 +8,7 @@ class Config {
       autoHarvestWeeds: true,
       autoHarvestCheckCpSMult: false,
       autoHarvestMiniCpSMult: { value: 1, min: 0 },
+      autoHarvestDying: true,
       autoPlant: false,
       autoPlantCheckCpSMult: false,
       autoPlantMaxiCpSMult: { value: 0, min: 0 },

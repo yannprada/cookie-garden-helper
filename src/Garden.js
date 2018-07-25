@@ -23,9 +23,17 @@ class Garden {
     return { seedId: tile[0], age: tile[1] };
   }
 
-  static plantIsMature(tile) {
+  static getPlantStage(tile) {
     let plant = this.getPlant(tile.seedId);
-    return tile.age >= plant.mature;
+    if (tile.age < plant.mature) {
+      return 'young';
+    } else {
+      if ((tile.age + Math.ceil(plant.ageTick + plant.ageTickR)) < 100) {
+        return 'mature';
+      } else {
+        return 'dying';
+      }
+    }
   }
 
   static tileIsEmpty(x, y) { return this.getTile(x, y).seedId == 0; }
@@ -54,24 +62,49 @@ class Garden {
     }
   }
 
+  static handleYoung(config, plant, x, y) {
+    if (plant.weed && config.autoHarvestWeeds) {
+      this.harvest(x, y);
+    }
+  }
+
+  static handleMature(config, plant, x, y) {
+    if (!plant.unlocked && config.autoHarvestNewSeeds) {
+      this.harvest(x, y);
+    } else if (config.autoHarvestCheckCpSMult &&
+               this.CpSMult >= config.autoHarvestMiniCpSMult.value) {
+      this.harvest(x, y);
+    }
+  }
+
+  static handleDying(config, plant, x, y) {
+    if (config.autoHarvestDying) {
+      this.harvest(x, y);
+    }
+  }
+
   static run(config) {
     this.forEachTile((x, y) => {
       if (config.autoHarvest && !this.tileIsEmpty(x, y)) {
         let tile = this.getTile(x, y);
         let plant = this.getPlant(tile.seedId);
 
-        // I hope this below is correct :S
-        if (!plant.unlocked && this.plantIsMature(tile) &&
-            config.autoHarvestNewSeeds) {
-          this.harvest(x, y);
-        } else if( !(plant.immortal && config.autoHarvestAvoidImmortals)) {
-          if (plant.weed && config.autoHarvestWeeds) {
-            this.harvest(x, y);
-          } else if (this.plantIsMature(tile)) {
-            if (!config.autoHarvestCheckCpSMult ||
-                this.CpSMult >= config.autoHarvestMiniCpSMult.value) {
-              this.harvest(x, y);
-            }
+        if (plant.immortal && config.autoHarvestAvoidImmortals) {
+          // do nothing
+        } else {
+          let stage = this.getPlantStage(tile);
+          switch (stage) {
+            case 'young':
+              this.handleYoung(config, plant, x, y);
+              break;
+            case 'mature':
+              this.handleMature(config, plant, x, y);
+              break;
+            case 'dying':
+              this.handleDying(config, plant, x, y);
+              break;
+            default:
+              console.log(`Unexpected plant stage: ${stage}`);
           }
         }
       }

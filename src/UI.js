@@ -125,13 +125,6 @@ class UI {
       </h2>
       <p>
         ${this.button(
-          'autoHarvestNewSeeds', 'New seeds',
-          'Harvest new seeds as soon as they are mature', true,
-          config.autoHarvestNewSeeds
-        )}
-      </p>
-      <p>
-        ${this.button(
           'autoHarvestAvoidImmortals', 'Avoid immortals',
           'Do not harvest immortal plants', true,
           config.autoHarvestAvoidImmortals
@@ -146,6 +139,13 @@ class UI {
       </p>
       <p>
         ${this.button(
+          'autoHarvestNewSeeds', 'New seeds',
+          'Harvest new seeds as soon as they are mature', true,
+          config.autoHarvestNewSeeds
+        )}
+      </p>
+      <p>
+        ${this.button(
           'autoHarvestCheckCpSMult', 'Check CpS mult',
           'Check the CpS multiplier before harvesting (see below)', true,
           config.autoHarvestCheckCpSMult
@@ -156,6 +156,13 @@ class UI {
           'autoHarvestMiniCpSMult', 'Mini CpS multiplier',
           'Minimum CpS multiplier for the auto-harvest to happen',
           config.autoHarvestMiniCpSMult
+        )}
+      </p>
+      <p>
+        ${this.button(
+          'autoHarvestDying', 'Dying plants',
+          'Harvest dying plants', true,
+          config.autoHarvestDying
         )}
       </p>
     </div>
