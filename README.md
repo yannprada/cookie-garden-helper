@@ -34,7 +34,11 @@ the conditions when the plant will be harvested:
   - if the option **Check CpS Mult** is **ON**, and the current CpS multiplier
   is above or equal to the one specified at **Mini CpS multiplier**
 - dying:
-  - if the plant is dying, and the option **Dying plants** is **ON**
+  - if the option **Check CpS Mult** is **ON**, and the current CpS
+  multiplier is above or equal to the one specified at
+**Mini CpS multiplier**
+  - if the plant is dying, the last tick is 5 seconds from expiring,
+  and the option **Dying plants** is **ON**
 
 ### Auto-plant
 
