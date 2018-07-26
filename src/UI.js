@@ -22,7 +22,15 @@ class UI {
 }
 .cookieGardenHelperPanel {
   float: left;
-  width: 33%;
+  width: 25%;
+}
+.cookieGardenHelperBigPanel {
+  float: left;
+  width: 50%;
+}
+.cookieGardenHelperSubPanel {
+  float: left;
+  width: 50%;
 }
 #cookieGardenHelperTitle {
   font-size: 2em;
@@ -37,6 +45,11 @@ class UI {
   font-size: 1.5em;
   padding: 0.5em;
   padding-top: 0;
+}
+#cookieGardenHelper h3 {
+  color: lightgrey;
+  font-style: italic;
+  padding: 0.75em;
 }
 #cookieGardenHelper p {
   text-indent: 0;
@@ -118,53 +131,80 @@ class UI {
   <style>${this.css}</style>
   <div id="cookieGardenHelperTitle" class="title">Cookie Garden Helper</div>
   <div id="cookieGardenHelperTools">
-    <div class="cookieGardenHelperPanel">
+    <div class="cookieGardenHelperBigPanel">
       <h2>
         Auto-harvest
         ${this.button('autoHarvest', '', '', true, config.autoHarvest)}
       </h2>
-      <p>
-        ${this.button(
-          'autoHarvestAvoidImmortals', 'Avoid immortals',
-          'Do not harvest immortal plants', true,
-          config.autoHarvestAvoidImmortals
-        )}
-      </p>
-      <p>
-        ${this.button(
-          'autoHarvestWeeds', 'Remove weeds',
-          'Remove weeds as soon as they appear', true,
-          config.autoHarvestWeeds
-        )}
-      </p>
-      <p>
-        ${this.button(
-          'autoHarvestNewSeeds', 'New seeds',
-          'Harvest new seeds as soon as they are mature', true,
-          config.autoHarvestNewSeeds
-        )}
-      </p>
-      <p>
-        ${this.button(
-          'autoHarvestCheckCpSMult', 'Check CpS mult',
-          'Check the CpS multiplier before harvesting (see below)', true,
-          config.autoHarvestCheckCpSMult
-        )}
-      </p>
-      <p>
-        ${this.numberInput(
-          'autoHarvestMiniCpSMult', 'Mini CpS multiplier',
-          'Minimum CpS multiplier for the auto-harvest to happen',
-          config.autoHarvestMiniCpSMult
-        )}
-      </p>
-      <p>
-        ${this.button(
-          'autoHarvestDying', 'Dying plants',
-          'Harvest dying plants', true,
-          config.autoHarvestDying
-        )}
-      </p>
+      <div class="cookieGardenHelperSubPanel">
+        <h3>immortal</h3>
+        <p>
+          ${this.button(
+            'autoHarvestAvoidImmortals', 'Avoid immortals',
+            'Do not harvest immortal plants', true,
+            config.autoHarvestAvoidImmortals
+          )}
+        </p>
+      </div>
+      <div class="cookieGardenHelperSubPanel">
+        <h3>young</h3>
+        <p>
+          ${this.button(
+            'autoHarvestWeeds', 'Remove weeds',
+            'Remove weeds as soon as they appear', true,
+            config.autoHarvestWeeds
+          )}
+        </p>
+      </div>
+      <div class="cookieGardenHelperSubPanel">
+        <h3>mature</h3>
+        <p>
+          ${this.button(
+            'autoHarvestNewSeeds', 'New seeds',
+            'Harvest new seeds as soon as they are mature', true,
+            config.autoHarvestNewSeeds
+          )}
+        </p>
+        <p>
+          ${this.button(
+            'autoHarvestCheckCpSMult', 'Check CpS mult',
+            'Check the CpS multiplier before harvesting (see below)', true,
+            config.autoHarvestCheckCpSMult
+          )}
+        </p>
+        <p>
+          ${this.numberInput(
+            'autoHarvestMiniCpSMult', 'Mini CpS multiplier',
+            'Minimum CpS multiplier for the auto-harvest to happen',
+            config.autoHarvestMiniCpSMult
+          )}
+        </p>
+      </div>
+      <div class="cookieGardenHelperSubPanel">
+        <h3>dying</h3>
+        <p>
+          ${this.button(
+            'autoHarvestDying', 'Dying plants',
+            `Harvest dying plants, ${config.autoHarvestDyingSeconds}s before `
+            + `the new tick occurs`, true,
+            config.autoHarvestDying
+          )}
+        </p>
+        <p>
+          ${this.button(
+            'autoHarvestCheckCpSMultDying', 'Check CpS mult',
+            'Check the CpS multiplier before harvesting (see below)', true,
+            config.autoHarvestCheckCpSMultDying
+          )}
+        </p>
+        <p>
+          ${this.numberInput(
+            'autoHarvestMiniCpSMultDying', 'Mini CpS multiplier',
+            'Minimum CpS multiplier for the auto-harvest to happen',
+            config.autoHarvestMiniCpSMultDying
+          )}
+        </p>
+      </div>
     </div>
     <div class="cookieGardenHelperPanel">
       <h2>

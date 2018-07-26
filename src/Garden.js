@@ -13,6 +13,10 @@ class Garden {
     return res;
   }
 
+  static get secondsBeforeNextTick() {
+    return (this.minigame.nextStep-Date.now()) / 1000;
+  }
+
   static get selectedSeed() { return this.minigame.seedSelected; }
   static set selectedSeed(seedId) { this.minigame.seedSelected = seedId; }
   static get plot() { return this.minigame.plot; }
@@ -78,7 +82,11 @@ class Garden {
   }
 
   static handleDying(config, plant, x, y) {
-    if (config.autoHarvestDying) {
+    if (config.autoHarvestCheckCpSMultDying &&
+        this.CpSMult >= config.autoHarvestMiniCpSMultDying.value) {
+      this.harvest(x, y);
+    } else if (config.autoHarvestDying &&
+        this.secondsBeforeNextTick <= config.autoHarvestDyingSeconds) {
       this.harvest(x, y);
     }
   }
