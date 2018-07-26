@@ -187,12 +187,12 @@ class UI {
   display: none;
 }
 #cookieGardenHelper {
-  background-color: rgba(0, 0, 0, 0.9);
-}
-#cookieGardenHelperTools {
+  background: #000 url(img/darkNoise.jpg);
   display: none;
+  padding: 1em;
+  position: inherit;
 }
-#cookieGardenHelperTools.visible {
+#cookieGardenHelper.visible {
   display: block;
 }
 #cookieGardenHelperTools:after {
@@ -213,34 +213,28 @@ class UI {
   width: 50%;
 }
 #cookieGardenHelperTitle {
+  color: grey;
   font-size: 2em;
-  padding: 0.5em;
+  font-style: italic;
+  margin-bottom: 0.5em;
   text-align: center;
-}
-#cookieGardenHelperTitle:hover {
-  color: lightyellow;
-  text-decoration: underline;
 }
 #cookieGardenHelper h2 {
   font-size: 1.5em;
-  padding: 0.5em;
-  padding-top: 0;
+  line-height: 2em;
 }
 #cookieGardenHelper h3 {
   color: lightgrey;
   font-style: italic;
-  padding: 0.75em;
+  line-height: 2em;
 }
 #cookieGardenHelper p {
   text-indent: 0;
-  padding-left: 0.7em;
 }
 #cookieGardenHelper input[type=number] {
   width: 3em;
 }
-#cookieGardenHelper a.toggleBtn:not(.off) .toggleBtnOff {
-  display: none;
-}
+#cookieGardenHelper a.toggleBtn:not(.off) .toggleBtnOff,
 #cookieGardenHelper a.toggleBtn.off .toggleBtnOn {
   display: none;
 }
@@ -306,7 +300,11 @@ class UI {
   }
 
   static build(config) {
-    doc.elId('row2').insertAdjacentHTML('beforebegin', `
+    doc.qSel('#row2 .productButtons').insertAdjacentHTML('beforeend', `
+        <div id="cookieGardenHelperProductButton" class="productButton">
+          Cookie Garden Helper
+        </div>`);
+    doc.elId('row2').insertAdjacentHTML('beforeend', `
 <div id="cookieGardenHelper">
   <style>${this.css}</style>
   <div id="cookieGardenHelperTitle" class="title">Cookie Garden Helper</div>
@@ -420,8 +418,8 @@ class UI {
   </div>
 </div>`);
 
-    doc.elId('cookieGardenHelperTitle').onclick = (event) => {
-      doc.elId('cookieGardenHelperTools').classList.toggle('visible');
+    doc.elId('cookieGardenHelperProductButton').onclick = (event) => {
+      doc.elId('cookieGardenHelper').classList.toggle('visible');
     };
 
     doc.qSelAll('#cookieGardenHelper input').forEach((input) => {
