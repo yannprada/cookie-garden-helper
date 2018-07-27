@@ -59,6 +59,10 @@ class UI {
 #cookieGardenHelper a.toggleBtn.off .toggleBtnOn {
   display: none;
 }
+#cookieGardenHelper span.labelWithState:not(.active) .labelStateActive,
+#cookieGardenHelper span.labelWithState.active .labelStateNotActive {
+  display: none;
+}
 #cookieGardenHelper .warning {
     padding: 1em;
     font-size: 1.5em;
@@ -104,6 +108,19 @@ class UI {
   static toggleButton(name) {
     let btn = doc.qSel(`#cookieGardenHelper a.toggleBtn[name=${name}]`);
     btn.classList.toggle('off');
+  }
+
+  static labelWithState(name, text, textActive, active) {
+    return `<span name="${name}" id="${this.makeId(name)}"
+                  class="labelWithState ${active ? 'active' : ''}"">
+      <span class="labelStateActive">${textActive}</span>
+      <span class="labelStateNotActive">${text}</span>
+    </span>`;
+  }
+
+  static labelToggleState(name, active) {
+    let label = doc.qSel(`#cookieGardenHelper span.labelWithState[name=${name}]`);
+    label.classList.toggle('active', active);
   }
 
   static createWarning(msg) {
@@ -228,7 +245,9 @@ class UI {
       </p>
       <p>
         ${this.button('savePlot', 'Save plot',
-        'Save the current plot; these seeds will be replanted later')}
+          'Save the current plot; these seeds will be replanted later')}
+        ${this.labelWithState('plotIsSaved', 'No saved plot', 'Plot saved',
+          Boolean(config.savedPlot.length))}
       </p>
     </div>
     <div class="cookieGardenHelperPanel">

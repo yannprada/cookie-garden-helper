@@ -9,6 +9,7 @@ class Main {
     let oldConvert = Garden.minigame.convert;
     Garden.minigame.convert = () => {
       this.config.savedPlot = [];
+      UI.labelToggleState('plotIsSaved', false);
       this.handleToggle('autoHarvest');
       this.handleToggle('autoPlant');
       this.save();
@@ -49,6 +50,7 @@ class Main {
       Garden.fillGardenWithSelectedSeed();
     } else if (key == 'savePlot') {
       this.config['savedPlot'] = clone(Garden.plot);
+      UI.labelToggleState('plotIsSaved', true);
     }
     this.save();
   }
