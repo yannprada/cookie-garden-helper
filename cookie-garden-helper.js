@@ -217,6 +217,7 @@ class UI {
   font-size: 2em;
   font-style: italic;
   margin-bottom: 0.5em;
+  margin-top: -0.5em;
   text-align: center;
 }
 #cookieGardenHelper h2 {
@@ -307,6 +308,8 @@ class UI {
     doc.elId('row2').insertAdjacentHTML('beforeend', `
 <div id="cookieGardenHelper">
   <style>${this.css}</style>
+  <a href="https://github.com/yannprada/cookie-garden-helper/blob/master/README.md#how-it-works"
+    target="new">how it works</a>
   <div id="cookieGardenHelperTitle" class="title">Cookie Garden Helper</div>
   <div id="cookieGardenHelperTools">
     <div class="cookieGardenHelperBigPanel">
