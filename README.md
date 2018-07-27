@@ -15,6 +15,9 @@ javascript: (function () {
 
 ## How it works
 
+To begin, click the button ***Cookie Garden Helper***, at the bottom of your
+garden / farms. There, you can configure how you would like the mod to operate.
+
 The mod loop through each unlocked tile, then tries to auto-harvest
 or auto-plant, depending on what is activated.
 
