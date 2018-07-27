@@ -60,6 +60,19 @@ This section is pretty obvious. Only one tool is there for now:
   - click this button to fill all the empty tiles of your plot
   - (don't forget to deselect the seed)
 
+## Sacrifice garden
+
+When you sacrifice your garden, a few things will happen:
+
+- your saved plot will be erased
+- the auto-harvest will be toggled OFF
+- the auto-plant will be toggled OFF
+
+This is to prevent planting locked seeds, as well as allowing you to verify your
+configuration before restarting automation.
+
+The rest of your configuration will remain.
+
 ## Screenshot
 
 ![Screenshot - UI of the mod cookie-garden-helper](/img/cookie-garden-helper.png?raw=true "UI")
