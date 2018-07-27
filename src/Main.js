@@ -4,6 +4,17 @@ class Main {
     this.timerInterval = 1000;
     this.config = Config.load();
     UI.build(this.config);
+
+    // sacrifice garden
+    let oldConvert = Garden.minigame.convert;
+    Garden.minigame.convert = () => {
+      this.config.savedPlot = [];
+      this.handleToggle('autoHarvest');
+      this.handleToggle('autoPlant');
+      this.save();
+      oldConvert();
+    }
+
     this.start();
   }
 
