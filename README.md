@@ -15,6 +15,9 @@ javascript: (function () {
 
 ## How it works
 
+To begin, click the button ***Cookie Garden Helper***, at the bottom of your
+garden / farms. There, you can configure how you would like the mod to operate.
+
 The mod loop through each unlocked tile, then tries to auto-harvest
 or auto-plant, depending on what is activated.
 
@@ -59,6 +62,19 @@ This section is pretty obvious. Only one tool is there for now:
   - select a seed you have unlocked
   - click this button to fill all the empty tiles of your plot
   - (don't forget to deselect the seed)
+
+## Sacrifice garden
+
+When you sacrifice your garden, a few things will happen:
+
+- your saved plot will be erased
+- the auto-harvest will be toggled OFF
+- the auto-plant will be toggled OFF
+
+This is to prevent planting locked seeds, as well as allowing you to verify your
+configuration before restarting automation.
+
+The rest of your configuration will remain.
 
 ## Screenshot
 

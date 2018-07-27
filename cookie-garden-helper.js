@@ -217,6 +217,7 @@ class UI {
   font-size: 2em;
   font-style: italic;
   margin-bottom: 0.5em;
+  margin-top: -0.5em;
   text-align: center;
 }
 #cookieGardenHelper h2 {
@@ -236,6 +237,10 @@ class UI {
 }
 #cookieGardenHelper a.toggleBtn:not(.off) .toggleBtnOff,
 #cookieGardenHelper a.toggleBtn.off .toggleBtnOn {
+  display: none;
+}
+#cookieGardenHelper span.labelWithState:not(.active) .labelStateActive,
+#cookieGardenHelper span.labelWithState.active .labelStateNotActive {
   display: none;
 }
 #cookieGardenHelper .warning {
@@ -285,6 +290,19 @@ class UI {
     btn.classList.toggle('off');
   }
 
+  static labelWithState(name, text, textActive, active) {
+    return `<span name="${name}" id="${this.makeId(name)}"
+                  class="labelWithState ${active ? 'active' : ''}"">
+      <span class="labelStateActive">${textActive}</span>
+      <span class="labelStateNotActive">${text}</span>
+    </span>`;
+  }
+
+  static labelToggleState(name, active) {
+    let label = doc.qSel(`#cookieGardenHelper span.labelWithState[name=${name}]`);
+    label.classList.toggle('active', active);
+  }
+
   static createWarning(msg) {
     doc.elId('row2').insertAdjacentHTML('beforebegin', `
 <div id="cookieGardenHelper">
@@ -307,6 +325,8 @@ class UI {
     doc.elId('row2').insertAdjacentHTML('beforeend', `
 <div id="cookieGardenHelper">
   <style>${this.css}</style>
+  <a href="https://github.com/yannprada/cookie-garden-helper/blob/master/README.md#how-it-works"
+    target="new">how it works</a>
   <div id="cookieGardenHelperTitle" class="title">Cookie Garden Helper</div>
   <div id="cookieGardenHelperTools">
     <div class="cookieGardenHelperBigPanel">
@@ -405,7 +425,9 @@ class UI {
       </p>
       <p>
         ${this.button('savePlot', 'Save plot',
-        'Save the current plot; these seeds will be replanted later')}
+          'Save the current plot; these seeds will be replanted later')}
+        ${this.labelWithState('plotIsSaved', 'No saved plot', 'Plot saved',
+          Boolean(config.savedPlot.length))}
       </p>
     </div>
     <div class="cookieGardenHelperPanel">
@@ -453,6 +475,18 @@ class Main {
     this.timerInterval = 1000;
     this.config = Config.load();
     UI.build(this.config);
+
+    // sacrifice garden
+    let oldConvert = Garden.minigame.convert;
+    Garden.minigame.convert = () => {
+      this.config.savedPlot = [];
+      UI.labelToggleState('plotIsSaved', false);
+      this.handleToggle('autoHarvest');
+      this.handleToggle('autoPlant');
+      this.save();
+      oldConvert();
+    }
+
     this.start();
   }
 
@@ -487,6 +521,7 @@ class Main {
       Garden.fillGardenWithSelectedSeed();
     } else if (key == 'savePlot') {
       this.config['savedPlot'] = clone(Garden.plot);
+      UI.labelToggleState('plotIsSaved', true);
     }
     this.save();
   }
