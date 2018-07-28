@@ -54,6 +54,8 @@ This one will work if:
 below or equal to the one specified at **Maxi CpS multiplier**
   - **OFF**
 
+***Note:*** mouse over the message *Plot saved*, to see what was saved.
+
 ### Manual tools
 
 This section is pretty obvious. Only one tool is there for now:

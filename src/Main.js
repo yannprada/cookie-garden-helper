@@ -54,4 +54,15 @@ class Main {
     }
     this.save();
   }
+
+  static handleMouseoutPlotIsSaved(element) {
+    Game.tooltip.shouldHide=1;
+  }
+
+  static handleMouseoverPlotIsSaved(element) {
+    if (this.config.savedPlot.length > 0) {
+      let content = UI.buildSavedPlot(this.config.savedPlot);
+      Game.tooltip.draw(element, window.escape(content));
+    }
+  }
 }
