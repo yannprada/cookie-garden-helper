@@ -243,6 +243,21 @@ class UI {
 #cookieGardenHelper span.labelWithState.active .labelStateNotActive {
   display: none;
 }
+#cookieGardenHelperTooltip {
+  width: 300px;
+}
+#cookieGardenHelperTooltip .gardenTileRow {
+  height: 48px;
+}
+#cookieGardenHelperTooltip .tile {
+  border: 1px inset dimgrey;
+  display: inline-block;
+  height: 48px;
+  width: 48px;
+}
+#cookieGardenHelperTooltip .gardenTileIcon {
+  position: inherit;
+}
 #cookieGardenHelper .warning {
     padding: 1em;
     font-size: 1.5em;
@@ -467,6 +482,24 @@ class UI {
         Main.handleClick(a.name);
       };
     });
+
+    doc.elId('cookieGardenHelperPlotIsSaved').onmouseout = (event) => {
+      Main.handleMouseoutPlotIsSaved(this);
+    }
+    doc.elId('cookieGardenHelperPlotIsSaved').onmouseover = (event) => {
+      Main.handleMouseoverPlotIsSaved(this);
+    }
+  }
+
+  static buildSavedPlot(savedPlot) {
+    return `<div id="cookieGardenHelperTooltip">
+      ${savedPlot.map((row) => `<div class="gardenTileRow">
+        ${row.map((tile) => `<div class="tile">
+          ${(tile[0] - 1) < 0 ? '' : `<div class="gardenTileIcon"
+            style="background-position: 0 ${(tile[0] - 1) * -48}px;"></div>`}
+        </div>`).join('')}
+      </div>`).join('')}
+    </div>`;
   }
 }
 
@@ -524,6 +557,17 @@ class Main {
       UI.labelToggleState('plotIsSaved', true);
     }
     this.save();
+  }
+
+  static handleMouseoutPlotIsSaved(element) {
+    Game.tooltip.shouldHide=1;
+  }
+
+  static handleMouseoverPlotIsSaved(element) {
+    if (this.config.savedPlot.length > 0) {
+      let content = UI.buildSavedPlot(this.config.savedPlot);
+      Game.tooltip.draw(element, window.escape(content));
+    }
   }
 }
 
