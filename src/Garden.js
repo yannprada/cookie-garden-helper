@@ -19,7 +19,20 @@ class Garden {
 
   static get selectedSeed() { return this.minigame.seedSelected; }
   static set selectedSeed(seedId) { this.minigame.seedSelected = seedId; }
-  static get plot() { return this.minigame.plot; }
+
+  static clonePlot() {
+    let plot = clone(this.minigame.plot);
+    for (let x=0; x<6; x++) {
+      for (let y=0; y<6; y++) {
+        let [seedId, age] = plot[x][y];
+        let plant = this.getPlant(seedId);
+        if (plant != undefined && !plant.plantable) {
+          plot[x][y] = [0, 0];
+        }
+      }
+    }
+    return plot;
+  }
 
   static getPlant(id) { return this.minigame.plantsById[id - 1]; }
   static getTile(x, y) {
@@ -42,7 +55,12 @@ class Garden {
 
   static tileIsEmpty(x, y) { return this.getTile(x, y).seedId == 0; }
 
-  static plantSeed(seedId, x, y) { this.minigame.useTool(seedId, x, y); }
+  static plantSeed(seedId, x, y) {
+    let plant = this.getPlant(seedId + 1);
+    if (plant.plantable) {
+      this.minigame.useTool(seedId, x, y);
+    }
+  }
 
   static forEachTile(callback) {
     for (let x=0; x<6; x++) {
@@ -124,7 +142,9 @@ class Garden {
           config.savedPlot.length > 0
         ) {
         let [seedId, age] = config.savedPlot[y][x];
-        this.plantSeed(seedId - 1, x, y);
+        if (seedId > 0) {
+          this.plantSeed(seedId - 1, x, y);
+        }
       }
     });
   }
