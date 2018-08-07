@@ -20,6 +20,7 @@ class UI {
   display: table;
   clear: both;
 }
+
 .cookieGardenHelperPanel {
   float: left;
   width: 25%;
@@ -32,6 +33,16 @@ class UI {
   float: left;
   width: 50%;
 }
+
+#autoHarvestPanel { color: wheat; }
+#autoHarvestPanel a { color: wheat; }
+
+#autoPlantPanel { color: lightgreen; }
+#autoPlantPanel a { color: lightgreen; }
+
+#autoHarvestPanel a:hover,
+#autoPlantPanel a:hover { color: white; }
+
 #cookieGardenHelperTitle {
   color: grey;
   font-size: 2em;
@@ -55,6 +66,7 @@ class UI {
 #cookieGardenHelper input[type=number] {
   width: 3em;
 }
+
 #cookieGardenHelper a.toggleBtn:not(.off) .toggleBtnOff,
 #cookieGardenHelper a.toggleBtn.off .toggleBtnOn {
   display: none;
@@ -63,6 +75,7 @@ class UI {
 #cookieGardenHelper span.labelWithState.active .labelStateNotActive {
   display: none;
 }
+
 #cookieGardenHelperTooltip {
   width: 300px;
 }
@@ -78,6 +91,7 @@ class UI {
 #cookieGardenHelperTooltip .gardenTileIcon {
   position: inherit;
 }
+
 #cookieGardenHelper .warning {
     padding: 1em;
     font-size: 1.5em;
@@ -152,6 +166,9 @@ class UI {
     };
   }
 
+  static get readmeLink() { return 'https://github.com/yannprada/'
+      + 'cookie-garden-helper/blob/master/README.md#how-it-works'; }
+
   static build(config) {
     doc.qSel('#row2 .productButtons').insertAdjacentHTML('beforeend', `
         <div id="cookieGardenHelperProductButton" class="productButton">
@@ -160,11 +177,11 @@ class UI {
     doc.elId('row2').insertAdjacentHTML('beforeend', `
 <div id="cookieGardenHelper">
   <style>${this.css}</style>
-  <a href="https://github.com/yannprada/cookie-garden-helper/blob/master/README.md#how-it-works"
+  <a href="${this.readmeLink}"
     target="new">how it works</a>
   <div id="cookieGardenHelperTitle" class="title">Cookie Garden Helper</div>
   <div id="cookieGardenHelperTools">
-    <div class="cookieGardenHelperBigPanel">
+    <div class="cookieGardenHelperBigPanel" id="autoHarvestPanel">
       <h2>
         Auto-harvest
         ${this.button('autoHarvest', '', '', true, config.autoHarvest)}
@@ -239,7 +256,7 @@ class UI {
         </p>
       </div>
     </div>
-    <div class="cookieGardenHelperPanel">
+    <div class="cookieGardenHelperPanel" id="autoPlantPanel">
       <h2>
         Auto-plant
         ${this.button('autoPlant', '', '', true, config.autoPlant)}
@@ -265,7 +282,7 @@ class UI {
           Boolean(config.savedPlot.length))}
       </p>
     </div>
-    <div class="cookieGardenHelperPanel">
+    <div class="cookieGardenHelperPanel" id="manualToolsPanel">
       <h2>Manual tools</h2>
       <p>
         ${this.button('fillGardenWithSelectedSeed', 'Plant selected seed',
@@ -320,7 +337,8 @@ class UI {
       ${savedPlot.map((row) => `<div class="gardenTileRow">
         ${row.map((tile) => `<div class="tile">
           ${(tile[0] - 1) < 0 ? '' : `<div class="gardenTileIcon"
-            style="background-position: 0 ${this.getSeedIconY(tile[0])}px;"></div>`}
+            style="background-position: 0 ${this.getSeedIconY(tile[0])}px;">
+          </div>`}
         </div>`).join('')}
       </div>`).join('')}
     </div>`;
