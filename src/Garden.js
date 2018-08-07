@@ -19,7 +19,20 @@ class Garden {
 
   static get selectedSeed() { return this.minigame.seedSelected; }
   static set selectedSeed(seedId) { this.minigame.seedSelected = seedId; }
-  static get plot() { return this.minigame.plot; }
+
+  static clonePlot() {
+    let plot = clone(this.minigame.plot);
+    for (let x=0; x<6; x++) {
+      for (let y=0; y<6; y++) {
+        let [seedId, age] = plot[x][y];
+        let plant = this.getPlant(seedId);
+        if (plant != undefined && !plant.plantable) {
+          plot[x][y] = [0, 0];
+        }
+      }
+    }
+    return plot;
+  }
 
   static getPlant(id) { return this.minigame.plantsById[id - 1]; }
   static getTile(x, y) {

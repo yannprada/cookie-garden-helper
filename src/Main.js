@@ -49,7 +49,7 @@ class Main {
     if (key == 'fillGardenWithSelectedSeed') {
       Garden.fillGardenWithSelectedSeed();
     } else if (key == 'savePlot') {
-      this.config['savedPlot'] = clone(Garden.plot);
+      this.config['savedPlot'] = Garden.clonePlot();
       UI.labelToggleState('plotIsSaved', true);
     }
     this.save();
