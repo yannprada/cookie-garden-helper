@@ -57,7 +57,6 @@ class Garden {
 
   static plantSeed(seedId, x, y) {
     let plant = this.getPlant(seedId + 1);
-    console.log(seedId, plant);
     if (plant.plantable) {
       this.minigame.useTool(seedId, x, y);
     }
