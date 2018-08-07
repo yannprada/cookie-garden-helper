@@ -491,12 +491,16 @@ class UI {
     }
   }
 
+  static getSeedIconY(seedId) {
+    return Garden.getPlant(seedId).icon * -48;
+  }
+
   static buildSavedPlot(savedPlot) {
     return `<div id="cookieGardenHelperTooltip">
       ${savedPlot.map((row) => `<div class="gardenTileRow">
         ${row.map((tile) => `<div class="tile">
           ${(tile[0] - 1) < 0 ? '' : `<div class="gardenTileIcon"
-            style="background-position: 0 ${(tile[0] - 1) * -48}px;"></div>`}
+            style="background-position: 0 ${this.getSeedIconY(tile[0])}px;"></div>`}
         </div>`).join('')}
       </div>`).join('')}
     </div>`;
