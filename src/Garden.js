@@ -42,7 +42,13 @@ class Garden {
 
   static tileIsEmpty(x, y) { return this.getTile(x, y).seedId == 0; }
 
-  static plantSeed(seedId, x, y) { this.minigame.useTool(seedId, x, y); }
+  static plantSeed(seedId, x, y) {
+    let plant = this.getPlant(seedId + 1);
+    console.log(seedId, plant);
+    if (plant.plantable) {
+      this.minigame.useTool(seedId, x, y);
+    }
+  }
 
   static forEachTile(callback) {
     for (let x=0; x<6; x++) {
@@ -124,7 +130,9 @@ class Garden {
           config.savedPlot.length > 0
         ) {
         let [seedId, age] = config.savedPlot[y][x];
-        this.plantSeed(seedId - 1, x, y);
+        if (seedId > 0) {
+          this.plantSeed(seedId - 1, x, y);
+        }
       }
     });
   }
