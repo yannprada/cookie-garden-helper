@@ -32,6 +32,10 @@ the conditions when the plant will be harvested:
 
 - young:
   - if it is a weed, and the option **Remove weeds** is **ON**
+  - if the option **Clean garden** is **ON**, the corresponding saved slot is
+  empty and the plant is already unlocked
+  - if the option **Clean garden** is **ON**, the corresponding saved slot is
+  not empty but the young plant don't match
 - mature:
   - if it is a new seed, and the option **New seeds** is **ON**
   - if the option **Check CpS Mult** is **ON**, and the current CpS multiplier

@@ -19,6 +19,7 @@ class Config {
       autoHarvestNewSeeds: true,
       autoHarvestAvoidImmortals: true,
       autoHarvestWeeds: true,
+      autoHarvestCleanGarden: false,
       autoHarvestCheckCpSMult: false,
       autoHarvestMiniCpSMult: { value: 1, min: 0 },
       autoHarvestDying: true,
@@ -135,6 +136,14 @@ class Garden {
 
   static handleYoung(config, plant, x, y) {
     if (plant.weed && config.autoHarvestWeeds) {
+      this.harvest(x, y);
+    }
+    let [seedId, age] = config.savedPlot[y][x];
+    seedId--;
+    if (config.autoHarvestCleanGarden &&
+        ((plant.unlocked && seedId == -1) ||
+         (seedId > -1 && seedId != plant.id))
+        ) {
       this.harvest(x, y);
     }
   }
@@ -403,6 +412,13 @@ class UI {
             'autoHarvestWeeds', 'Remove weeds',
             'Remove weeds as soon as they appear', true,
             config.autoHarvestWeeds
+          )}
+        </p>
+        <p>
+          ${this.button(
+            'autoHarvestCleanGarden', 'Clean Garden',
+            'Only allow saved and unlocked seeds', true,
+            config.autoHarvestCleanGarden
           )}
         </p>
       </div>
