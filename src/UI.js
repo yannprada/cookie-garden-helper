@@ -205,6 +205,13 @@ class UI {
             config.autoHarvestWeeds
           )}
         </p>
+        <p>
+          ${this.button(
+            'autoHarvestCleanGarden', 'Clean Garden',
+            'Only allow saved and unlocked seeds', true,
+            config.autoHarvestCleanGarden
+          )}
+        </p>
       </div>
       <div class="cookieGardenHelperSubPanel">
         <h3>mature</h3>

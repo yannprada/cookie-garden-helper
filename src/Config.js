@@ -6,6 +6,7 @@ class Config {
       autoHarvestNewSeeds: true,
       autoHarvestAvoidImmortals: true,
       autoHarvestWeeds: true,
+      autoHarvestCleanGarden: false,
       autoHarvestCheckCpSMult: false,
       autoHarvestMiniCpSMult: { value: 1, min: 0 },
       autoHarvestDying: true,
