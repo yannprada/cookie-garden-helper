@@ -258,7 +258,7 @@ class UI {
               <p>
                 ${this.numberInput(
                   'autoHarvestMiniCpSMult',
-                  'Mini CpS multiplier',
+                  'Min CpS multiplier',
                   'Minimum CpS multiplier for the auto-harvest to happen',
                   config.autoHarvestMiniCpSMult,
                 )}
@@ -287,7 +287,7 @@ class UI {
               <p>
                 ${this.numberInput(
                   'autoHarvestMiniCpSMultDying',
-                  'Mini CpS multiplier',
+                  'Min CpS multiplier',
                   'Minimum CpS multiplier for the auto-harvest to happen',
                   config.autoHarvestMiniCpSMultDying,
                 )}
@@ -308,7 +308,7 @@ class UI {
             <p>
               ${this.numberInput(
                 'autoPlantMaxiCpSMult',
-                'Maxi CpS multiplier',
+                'Max CpS multiplier',
                 'Maximum CpS multiplier for the auto-plant to happen',
                 config.autoPlantMaxiCpSMult,
               )}
