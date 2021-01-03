@@ -22,6 +22,10 @@ class Garden {
     return (this.minigame.nextStep - Date.now()) / 1000;
   }
 
+  static hasHarvestBenefit(plant) {
+    return typeof plant.onHarvest === 'function';
+  }
+
   static get selectedSeed() {
     return this.minigame.seedSelected;
   }
@@ -117,7 +121,11 @@ class Garden {
   static handleMature(config, plant, x, y) {
     if (!plant.unlocked && config.autoHarvestNewSeeds) {
       this.harvest(x, y);
-    } else if (config.autoHarvestCheckCpSMult && this.CpSMult >= config.autoHarvestMiniCpSMult.value) {
+    } else if (
+      config.autoHarvestCheckCpSMult &&
+      this.hasHarvestBenefit(plant) &&
+      this.CpSMult >= config.autoHarvestMiniCpSMult.value
+    ) {
       this.harvest(x, y);
     }
   }
