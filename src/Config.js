@@ -9,7 +9,7 @@ class Config {
       autoHarvestCheckCpSMult: false,
       autoHarvestMiniCpSMult: { value: 1, min: 0 },
       autoHarvestDying: true,
-      autoHarvestDyingSeconds: 5,
+      autoHarvestDyingSeconds: 60,
       autoHarvestCheckCpSMultDying: false,
       autoHarvestMiniCpSMultDying: { value: 1, min: 0 },
       autoPlant: false,
