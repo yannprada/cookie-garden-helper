@@ -451,7 +451,7 @@ class UI {
                 ${this.button(
                   'autoHarvestCleanGarden',
                   'Clean Garden',
-                  'Only allow saved and unlocked seeds',
+                  'Only allow saved and new/unlocked seeds',
                   true,
                   config.autoHarvestCleanGarden,
                 )}
