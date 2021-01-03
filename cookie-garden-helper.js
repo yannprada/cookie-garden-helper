@@ -154,6 +154,10 @@ class Garden {
   }
 
   static handleYoung(config, plant, x, y) {
+    if (!plant.unlocked && config.autoHarvestNewSeeds) {
+      return;
+    }
+
     if (plant.weed && config.autoHarvestWeeds) {
       this.harvest(x, y);
     }
