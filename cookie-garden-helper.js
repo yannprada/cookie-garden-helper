@@ -153,7 +153,7 @@ class Garden {
     if (plant.weed && config.autoHarvestWeeds) {
       this.harvest(x, y);
     }
-    let [seedId] = config.savedPlot[y][x];
+    let [seedId] = config.savedPlot.length > 0 ? config.savedPlot[y][x] : [0, 0];
     seedId -= 1;
     if (
       config.autoHarvestCleanGarden &&
