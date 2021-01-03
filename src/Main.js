@@ -1,4 +1,3 @@
-
 class Main {
   static init() {
     this.timerInterval = 1000;
@@ -6,7 +5,7 @@ class Main {
     UI.build(this.config);
 
     // sacrifice garden
-    let oldConvert = Garden.minigame.convert;
+    const oldConvert = Garden.minigame.convert;
     Garden.minigame.convert = () => {
       this.config.savedPlot = [];
       UI.labelToggleState('plotIsSaved', false);
@@ -14,21 +13,22 @@ class Main {
       this.handleToggle('autoPlant');
       this.save();
       oldConvert();
-    }
+    };
 
     this.start();
   }
 
   static start() {
-    this.timerId = window.setInterval(
-      () => Garden.run(this.config),
-      this.timerInterval
-    );
+    this.timerId = window.setInterval(() => Garden.run(this.config), this.timerInterval);
   }
 
-  static stop() { window.clearInterval(this.timerId); }
+  static stop() {
+    window.clearInterval(this.timerId);
+  }
 
-  static save() { Config.save(this.config); }
+  static save() {
+    Config.save(this.config);
+  }
 
   static handleChange(key, value) {
     if (this.config[key].value !== undefined) {
@@ -46,22 +46,22 @@ class Main {
   }
 
   static handleClick(key) {
-    if (key == 'fillGardenWithSelectedSeed') {
+    if (key === 'fillGardenWithSelectedSeed') {
       Garden.fillGardenWithSelectedSeed();
-    } else if (key == 'savePlot') {
-      this.config['savedPlot'] = Garden.clonePlot();
+    } else if (key === 'savePlot') {
+      this.config.savedPlot = Garden.clonePlot();
       UI.labelToggleState('plotIsSaved', true);
     }
     this.save();
   }
 
   static handleMouseoutPlotIsSaved(element) {
-    Game.tooltip.shouldHide=1;
+    Game.tooltip.shouldHide = 1;
   }
 
   static handleMouseoverPlotIsSaved(element) {
     if (this.config.savedPlot.length > 0) {
-      let content = UI.buildSavedPlot(this.config.savedPlot);
+      const content = UI.buildSavedPlot(this.config.savedPlot);
       Game.tooltip.draw(element, window.escape(content));
     }
   }

@@ -1,4 +1,3 @@
-
 class Config {
   static get default() {
     return {
@@ -20,10 +19,12 @@ class Config {
     };
   }
 
-  static get storageKey() { return moduleName; }
+  static get storageKey() {
+    return moduleName;
+  }
 
   static load() {
-    let config = window.localStorage.getItem(this.storageKey);
+    const config = window.localStorage.getItem(this.storageKey);
     if (!config) {
       this.save(this.default);
       return this.default;
