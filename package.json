@@ -29,9 +29,12 @@
       "url": "https://www.linkedin.com/in/aranleite"
     }
   ],
+  "scripts": {
+    "build": "merge.sh && git add cookie-garden-helper.js"
+  },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged && ./merge.sh && git add ./cookie-garden-helper.js"
+      "pre-commit": "lint-staged && npm run build"
     }
   },
   "lint-staged": {
