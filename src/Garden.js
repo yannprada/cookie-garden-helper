@@ -123,7 +123,9 @@ class Garden {
   }
 
   static handleMature(config, plant, x, y) {
-    if (!plant.unlocked && config.autoHarvestNewSeeds) {
+    if (config.autoHarvestAllMature) {
+      this.harvest(x, y);
+    } else if (!plant.unlocked && config.autoHarvestNewSeeds) {
       this.harvest(x, y);
     } else if (
       config.autoHarvestCheckCpSMult &&
@@ -135,7 +137,9 @@ class Garden {
   }
 
   static handleDying(config, plant, x, y) {
-    if (config.autoHarvestCheckCpSMultDying && this.CpSMult >= config.autoHarvestMiniCpSMultDying.value) {
+    if (config.autoHarvestAllMature) {
+      this.harvest(x, y);
+    } else if (config.autoHarvestCheckCpSMultDying && this.CpSMult >= config.autoHarvestMiniCpSMultDying.value) {
       this.harvest(x, y);
     } else if (config.autoHarvestDying && this.secondsBeforeNextTick <= config.autoHarvestDyingSeconds) {
       this.harvest(x, y);

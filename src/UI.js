@@ -248,6 +248,15 @@ class UI {
               </p>
               <p>
                 ${this.button(
+                  'autoHarvestAllMature',
+                  'All',
+                  'Harvest all seeds as soon as they are mature',
+                  true,
+                  config.autoHarvestAllMature,
+                )}
+              </p>
+              <p>
+                ${this.button(
                   'autoHarvestCheckCpSMult',
                   'Check CpS mult',
                   'Check the CpS multiplier before harvesting (see below)',

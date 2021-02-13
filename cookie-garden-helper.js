@@ -14,6 +14,7 @@ class Config {
   static get default() {
     return {
       autoHarvest: false,
+      autoHarvestAllMature: false,
       autoHarvestNewSeeds: true,
       autoHarvestAvoidImmortals: true,
       autoHarvestWeeds: true,
@@ -173,7 +174,9 @@ class Garden {
   }
 
   static handleMature(config, plant, x, y) {
-    if (!plant.unlocked && config.autoHarvestNewSeeds) {
+    if (config.autoHarvestAllMature) {
+      this.harvest(x, y);
+    } else if (!plant.unlocked && config.autoHarvestNewSeeds) {
       this.harvest(x, y);
     } else if (
       config.autoHarvestCheckCpSMult &&
@@ -185,7 +188,9 @@ class Garden {
   }
 
   static handleDying(config, plant, x, y) {
-    if (config.autoHarvestCheckCpSMultDying && this.CpSMult >= config.autoHarvestMiniCpSMultDying.value) {
+    if (config.autoHarvestAllMature) {
+      this.harvest(x, y);
+    } else if (config.autoHarvestCheckCpSMultDying && this.CpSMult >= config.autoHarvestMiniCpSMultDying.value) {
       this.harvest(x, y);
     } else if (config.autoHarvestDying && this.secondsBeforeNextTick <= config.autoHarvestDyingSeconds) {
       this.harvest(x, y);
@@ -472,14 +477,22 @@ class UI {
             <div class="cookieGardenHelperSubPanel">
               <h3>mature</h3>
               <p>
-                ${this.button(
-                  'autoHarvestNewSeeds',
-                  'New seeds',
-                  'Harvest new seeds as soon as they are mature',
-                  true,
-                  config.autoHarvestNewSeeds,
-                )}
-              </p>
+              ${this.button(
+                'autoHarvestNewSeeds',
+                'New seeds',
+                'Harvest new seeds as soon as they are mature',
+                true,
+                config.autoHarvestNewSeeds,
+              )}
+            </p>
+            ${this.button(
+              'autoHarvestAllMature',
+              'All',
+              'Harvest all seeds as soon as they are mature',
+              true,
+              config.autoHarvestAllMature,
+            )}
+          </p>
               <p>
                 ${this.button(
                   'autoHarvestCheckCpSMult',

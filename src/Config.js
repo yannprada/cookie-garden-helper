@@ -2,6 +2,7 @@ class Config {
   static get default() {
     return {
       autoHarvest: false,
+      autoHarvestAllMature: false,
       autoHarvestNewSeeds: true,
       autoHarvestAvoidImmortals: true,
       autoHarvestWeeds: true,
