@@ -1,17 +1,15 @@
 class Main {
   static init() {
     this.timerInterval = 1000;
-    this.config = Config.load();
-    UI.build(this.config);
+    UI.build(configs);
 
     // sacrifice garden
     const oldConvert = Garden.minigame.convert;
     Garden.minigame.convert = () => {
-      this.config.savedPlot = [];
       UI.labelToggleState('plotIsSaved', false);
       this.handleToggle('autoHarvest');
       this.handleToggle('autoPlant');
-      this.save();
+      Game.WriteSave();
       oldConvert();
     };
 
@@ -19,29 +17,36 @@ class Main {
   }
 
   static start() {
-    this.timerId = window.setInterval(() => Garden.run(this.config), this.timerInterval);
+    this.timerId = window.setInterval(() => Garden.run(configs), this.timerInterval);
   }
 
   static stop() {
     window.clearInterval(this.timerId);
   }
 
-  static save() {
-    Config.save(this.config);
-  }
-
   static handleChange(key, value) {
-    if (this.config[key].value !== undefined) {
-      this.config[key].value = value;
+    if (value === defaultConfigs[key].value) {
+      delete changedConfigs[key];
+      configs[key].value = defaultConfigs[key].value;
     } else {
-      this.config[key] = value;
+      changedConfigs[key].value = value;
     }
-    this.save();
+    Game.WriteSave();
   }
 
   static handleToggle(key) {
-    this.config[key] = !this.config[key];
-    this.save();
+    const newValue = !configs[key];
+    console.log(key);
+    console.log(configs[key]);
+    console.log(newValue);
+    console.log(defaultConfigs[key]);
+    if (newValue === defaultConfigs[key]) {
+      delete changedConfigs[key];
+      configs[key] = defaultConfigs[key];
+    } else {
+      changedConfigs[key] = newValue;
+    }
+    Game.WriteSave();
     UI.toggleButton(key);
   }
 
@@ -49,10 +54,10 @@ class Main {
     if (key === 'fillGardenWithSelectedSeed') {
       Garden.fillGardenWithSelectedSeed();
     } else if (key === 'savePlot') {
-      this.config.savedPlot = Garden.clonePlot();
+      Object.assign(changedConfigs, { savedPlot: Garden.clonePlot() });
       UI.labelToggleState('plotIsSaved', true);
     }
-    this.save();
+    Game.WriteSave();
   }
 
   static handleMouseoutPlotIsSaved(element) {
@@ -60,8 +65,8 @@ class Main {
   }
 
   static handleMouseoverPlotIsSaved(element) {
-    if (this.config.savedPlot.length > 0) {
-      const content = UI.buildSavedPlot(this.config.savedPlot);
+    if (configs.savedPlot.length > 0) {
+      const content = UI.buildSavedPlot(configs.savedPlot);
       Game.tooltip.draw(element, window.escape(content));
     }
   }

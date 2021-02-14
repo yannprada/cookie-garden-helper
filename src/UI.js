@@ -395,9 +395,9 @@ class UI {
          .map(
            tile => `<div class="tile">
          ${
-           tile[0] - 1 < 0
+           tile - 1 < 0
              ? ''
-             : `<div class="gardenTileIcon" style="background-position: 0 ${this.getSeedIconY(tile[0])}px;"></div>`
+             : `<div class="gardenTileIcon" style="background-position: 0 ${this.getSeedIconY(tile)}px;"></div>`
          }
        </div>`,
          )

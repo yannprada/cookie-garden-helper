@@ -38,10 +38,12 @@ class Garden {
     const plot = clone(this.minigame.plot);
     for (let x = 0; x < 6; x++) {
       for (let y = 0; y < 6; y++) {
-        const seedId = plot[x][y][0];
-        const plant = this.getPlant(seedId);
-        if (plant && !plant.plantable) {
-          plot[x][y] = [0, 0];
+        // eslint-disable-next-line prefer-destructuring
+        plot[x][y] = this.minigame.plot[x][y][0];
+
+        const seedId = plot[x][y];
+        if (this.getPlant(seedId) && !plant.plantable) {
+          plot[x][y] = 0;
         }
       }
     }
@@ -111,7 +113,7 @@ class Garden {
     if (plant.weed && config.autoHarvestWeeds) {
       this.harvest(x, y);
     }
-    let seedId = config.savedPlot.length > 0 ? config.savedPlot[y][x][0] : [0, 0];
+    let seedId = config.savedPlot.length > 0 ? config.savedPlot[y][x] : [0, 0];
     seedId -= 1;
     if (
       config.autoHarvestCleanGarden &&
@@ -178,7 +180,7 @@ class Garden {
         this.tileIsEmpty(x, y) &&
         config.savedPlot.length > 0
       ) {
-        const seedId = config.savedPlot[y][x][0];
+        const seedId = config.savedPlot[y][x];
         if (seedId > 0) {
           this.plantSeed(seedId - 1, x, y);
         }

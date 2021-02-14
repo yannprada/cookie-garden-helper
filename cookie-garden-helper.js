@@ -10,45 +10,47 @@ const doc = {
   qSel: document.querySelector.bind(document),
   qSelAll: document.querySelectorAll.bind(document),
 };
-class Config {
-  static get default() {
-    return {
-      autoHarvest: false,
-      autoHarvestAllMature: false,
-      autoHarvestNewSeeds: true,
-      autoHarvestAvoidImmortals: true,
-      autoHarvestWeeds: true,
-      autoHarvestCleanGarden: false,
-      autoHarvestCheckCpSMult: false,
-      autoHarvestMiniCpSMult: { value: 1, min: 0 },
-      autoHarvestDying: true,
-      autoHarvestDyingSeconds: 60,
-      autoHarvestCheckCpSMultDying: false,
-      autoHarvestMiniCpSMultDying: { value: 1, min: 0 },
-      autoPlant: false,
-      autoPlantCheckCpSMult: false,
-      autoPlantMaxiCpSMult: { value: 0, min: 0 },
-      savedPlot: [],
-    };
-  }
+const defaultConfigs = {
+  autoHarvest: false,
+  autoHarvestAllMature: false,
+  autoHarvestNewSeeds: true,
+  autoHarvestAvoidImmortals: true,
+  autoHarvestWeeds: true,
+  autoHarvestCleanGarden: false,
+  autoHarvestCheckCpSMult: false,
+  autoHarvestMiniCpSMult: {
+    value: 1,
+    min: 0,
+  },
+  autoHarvestDying: true,
+  autoHarvestDyingSeconds: 60,
+  autoHarvestCheckCpSMultDying: false,
+  autoHarvestMiniCpSMultDying: {
+    value: 1,
+    min: 0,
+  },
+  autoPlant: false,
+  autoPlantCheckCpSMult: false,
+  autoPlantMaxiCpSMult: {
+    value: 0,
+    min: 0,
+  },
+  savedPlot: [],
+};
+const configs = {};
+Object.assign(configs, defaultConfigs);
+let changedConfigs = {};
 
-  static get storageKey() {
-    return moduleName;
-  }
-
-  static load() {
-    const config = window.localStorage.getItem(this.storageKey);
-    if (!config) {
-      this.save(this.default);
-      return this.default;
-    }
-    return Object.assign(this.default, JSON.parse(config));
-  }
-
-  static save(config) {
-    window.localStorage.setItem(this.storageKey, JSON.stringify(config));
-  }
-}
+Game.registerMod('Cookie Garden Helper', {
+  save: () => {
+    Object.assign(configs, changedConfigs);
+    return JSON.stringify(changedConfigs);
+  },
+  load: saveString => {
+    changedConfigs = JSON.parse(saveString);
+    Object.assign(configs, changedConfigs);
+  },
+});
 class Garden {
   static get minigame() {
     return Game.Objects.Farm.minigame;
@@ -89,10 +91,12 @@ class Garden {
     const plot = clone(this.minigame.plot);
     for (let x = 0; x < 6; x++) {
       for (let y = 0; y < 6; y++) {
-        const [seedId, age] = plot[x][y];
-        const plant = this.getPlant(seedId);
-        if (plant && !plant.plantable) {
-          plot[x][y] = [0, 0];
+        // eslint-disable-next-line prefer-destructuring
+        plot[x][y] = this.minigame.plot[x][y][0];
+
+        const seedId = plot[x][y];
+        if (this.getPlant(seedId) && !plant.plantable) {
+          plot[x][y] = 0;
         }
       }
     }
@@ -162,7 +166,7 @@ class Garden {
     if (plant.weed && config.autoHarvestWeeds) {
       this.harvest(x, y);
     }
-    let [seedId] = config.savedPlot.length > 0 ? config.savedPlot[y][x] : [0, 0];
+    let seedId = config.savedPlot.length > 0 ? config.savedPlot[y][x] : [0, 0];
     seedId -= 1;
     if (
       config.autoHarvestCleanGarden &&
@@ -229,7 +233,7 @@ class Garden {
         this.tileIsEmpty(x, y) &&
         config.savedPlot.length > 0
       ) {
-        const [seedId, age] = config.savedPlot[y][x];
+        const seedId = config.savedPlot[y][x];
         if (seedId > 0) {
           this.plantSeed(seedId - 1, x, y);
         }
@@ -477,22 +481,23 @@ class UI {
             <div class="cookieGardenHelperSubPanel">
               <h3>mature</h3>
               <p>
-              ${this.button(
-                'autoHarvestNewSeeds',
-                'New seeds',
-                'Harvest new seeds as soon as they are mature',
-                true,
-                config.autoHarvestNewSeeds,
-              )}
-            </p>
-            ${this.button(
-              'autoHarvestAllMature',
-              'All',
-              'Harvest all seeds as soon as they are mature',
-              true,
-              config.autoHarvestAllMature,
-            )}
-          </p>
+                ${this.button(
+                  'autoHarvestNewSeeds',
+                  'New seeds',
+                  'Harvest new seeds as soon as they are mature',
+                  true,
+                  config.autoHarvestNewSeeds,
+                )}
+              </p>
+              <p>
+                ${this.button(
+                  'autoHarvestAllMature',
+                  'All',
+                  'Harvest all seeds as soon as they are mature',
+                  true,
+                  config.autoHarvestAllMature,
+                )}
+              </p>
               <p>
                 ${this.button(
                   'autoHarvestCheckCpSMult',
@@ -633,9 +638,9 @@ class UI {
          .map(
            tile => `<div class="tile">
          ${
-           tile[0] - 1 < 0
+           tile - 1 < 0
              ? ''
-             : `<div class="gardenTileIcon" style="background-position: 0 ${this.getSeedIconY(tile[0])}px;"></div>`
+             : `<div class="gardenTileIcon" style="background-position: 0 ${this.getSeedIconY(tile)}px;"></div>`
          }
        </div>`,
          )
@@ -649,17 +654,15 @@ class UI {
 class Main {
   static init() {
     this.timerInterval = 1000;
-    this.config = Config.load();
-    UI.build(this.config);
+    UI.build(configs);
 
     // sacrifice garden
     const oldConvert = Garden.minigame.convert;
     Garden.minigame.convert = () => {
-      this.config.savedPlot = [];
       UI.labelToggleState('plotIsSaved', false);
       this.handleToggle('autoHarvest');
       this.handleToggle('autoPlant');
-      this.save();
+      Game.WriteSave();
       oldConvert();
     };
 
@@ -667,29 +670,36 @@ class Main {
   }
 
   static start() {
-    this.timerId = window.setInterval(() => Garden.run(this.config), this.timerInterval);
+    this.timerId = window.setInterval(() => Garden.run(configs), this.timerInterval);
   }
 
   static stop() {
     window.clearInterval(this.timerId);
   }
 
-  static save() {
-    Config.save(this.config);
-  }
-
   static handleChange(key, value) {
-    if (this.config[key].value !== undefined) {
-      this.config[key].value = value;
+    if (value === defaultConfigs[key].value) {
+      delete changedConfigs[key];
+      configs[key].value = defaultConfigs[key].value;
     } else {
-      this.config[key] = value;
+      changedConfigs[key].value = value;
     }
-    this.save();
+    Game.WriteSave();
   }
 
   static handleToggle(key) {
-    this.config[key] = !this.config[key];
-    this.save();
+    const newValue = !configs[key];
+    console.log(key);
+    console.log(configs[key]);
+    console.log(newValue);
+    console.log(defaultConfigs[key]);
+    if (newValue === defaultConfigs[key]) {
+      delete changedConfigs[key];
+      configs[key] = defaultConfigs[key];
+    } else {
+      changedConfigs[key] = newValue;
+    }
+    Game.WriteSave();
     UI.toggleButton(key);
   }
 
@@ -697,10 +707,10 @@ class Main {
     if (key === 'fillGardenWithSelectedSeed') {
       Garden.fillGardenWithSelectedSeed();
     } else if (key === 'savePlot') {
-      this.config.savedPlot = Garden.clonePlot();
+      Object.assign(changedConfigs, { savedPlot: Garden.clonePlot() });
       UI.labelToggleState('plotIsSaved', true);
     }
-    this.save();
+    Game.WriteSave();
   }
 
   static handleMouseoutPlotIsSaved(element) {
@@ -708,8 +718,8 @@ class Main {
   }
 
   static handleMouseoverPlotIsSaved(element) {
-    if (this.config.savedPlot.length > 0) {
-      const content = UI.buildSavedPlot(this.config.savedPlot);
+    if (configs.savedPlot.length > 0) {
+      const content = UI.buildSavedPlot(configs.savedPlot);
       Game.tooltip.draw(element, window.escape(content));
     }
   }
