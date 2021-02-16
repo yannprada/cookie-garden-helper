@@ -1,0 +1,5 @@
+* text=auto
+*.jpg -text
+*.jpeg -text
+*.pbxproj -text
+*.png -text
