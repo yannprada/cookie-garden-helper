@@ -1,0 +1,103 @@
+#cookieGardenHelper {
+  background: #000 url(https://orteil.dashnet.org/cookieclicker/img/darkNoise.jpg);
+  display: none;
+  padding: 1em;
+  position: inherit;
+}
+#cookieGardenHelper.visible {
+  display: block;
+}
+#cookieGardenHelperTitle {
+  color: #808080;
+  font-size: 2em;
+  font-style: italic;
+  margin: -0.5em 0 0.5em;
+  text-align: center;
+}
+#cookieGardenHelperTools {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+}
+#cookieGardenHelperTools a:hover {
+  color: #fff;
+}
+#cookieGardenHelperTools h2 {
+  font-size: 1.5em;
+  line-height: 2em;
+}
+#cookieGardenHelperTools input {
+  width: 23%;
+}
+#cookieGardenHelperTools p {
+  text-indent: 0;
+}
+#autoHarvestPanel {
+  display: grid;
+  grid-template-rows: 1fr 2fr 3fr;
+}
+#autoHarvestPanel > section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+#autoHarvestPanel a,
+#autoHarvestPanel h2,
+#autoHarvestPanel label {
+  color: #f5deb3;
+}
+.cookieGardenHelperSubPanel h3 {
+  color: #d3d3d3;
+  font-style: italic;
+  line-height: 2em;
+}
+#autoPlantPanel a,
+#autoPlantPanel h2,
+#autoPlantPanel label,
+#autoPlantPanel span {
+  color: #90ee90;
+}
+.cookieGardenHelperPanel {
+  display: grid;
+  grid-template-rows: 14% repeat(3, 12%);
+}
+#cookieGardenHelperTooltip {
+  width: 300px;
+}
+#cookieGardenHelperTooltip .gardenTileRow {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  height: 48px;
+}
+#cookieGardenHelperTooltip .tile {
+  border: 1px inset #696969;
+  position: inherit;
+}
+#cookieGardenHelper .warning {
+  display: flex;
+  justify-content: space-between;
+  padding: 1em;
+  background-color: #ffa500;
+  color: #fff;
+}
+#cookieGardenHelper .warning p {
+  font-size: 1.5em;
+}
+#cookieGardenHelper .warning .closeWarning {
+  font-weight: bold;
+  font-size: 3em;
+  line-height: 0.25em;
+  cursor: pointer;
+  transition: 0.3s;
+}
+#cookieGardenHelper .warning .closeWarning:hover {
+  color: #000;
+}
+
+/* ---- */
+#cookieGardenHelper a.toggleBtn:not(.off) .toggleBtnOff,
+#cookieGardenHelper a.toggleBtn.off .toggleBtnOn {
+  display: none;
+}
+#cookieGardenHelper span.labelWithState:not(.active) .labelStateActive,
+#cookieGardenHelper span.labelWithState.active .labelStateNotActive {
+  display: none;
+}

@@ -1,0 +1,64 @@
+{
+  "name": "cookie-garden-helper",
+  "version": "2.0.0",
+  "description": "Automate your garden in Cookie Clicker.",
+  "keywords": [
+    "JavaScript",
+    "Dashnet",
+    "Orteil",
+    "Cookie Clicker",
+    "mod"
+  ],
+  "homepage": "https://github.com/yannprada/cookie-garden-helper",
+  "bugs": {
+    "url": "https://github.com/yannprada/cookie-garden-helper/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yannprada/cookie-garden-helper"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Yannprada",
+    "email": "pradayrol.yannick@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "Aran Leite",
+      "email": "hyoretsu@gmail.com",
+      "url": "https://www.linkedin.com/in/aranleite"
+    }
+  ],
+  "main": "cookie-garden-helper.js",
+  "scripts": {
+    "build": "merge.sh && git add cookie-garden-helper.js"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && npm run build"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "devDependencies": {
+    "eslint": "^7.17.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^7.1.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.0",
+    "husky": "^4.3.6",
+    "lint-staged": "^10.5.3",
+    "prettier": "^2.2.1"
+  },
+  "ccrepo": {
+    "icon": [
+      28,
+      20
+    ],
+    "name": "Cookie Garden Helper"
+  }
+}
