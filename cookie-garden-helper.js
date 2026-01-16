@@ -95,7 +95,8 @@ class Garden {
         plot[x][y] = this.minigame.plot[x][y][0];
 
         const seedId = plot[x][y];
-        if (this.getPlant(seedId) && !plant.plantable) {
+        const plant = this.getPlant(seedId);
+        if (plant && !plant.plantable) {
           plot[x][y] = 0;
         }
       }
