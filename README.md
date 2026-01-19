@@ -21,7 +21,7 @@ Courtesy of [Z](https://github.com/TheGLander), it's a new centralized way of po
 3. To activate, click the bookmark when the game's open.
 
 ```javascript
-javascript: Game.LoadMod('https://rawgit.com/yannprada/cookie-garden-helper/master/cookie-garden-helper.js');
+javascript: Game.LoadMod('https://cdn.jsdelivr.net/gh/yannprada/cookie-garden-helper@master/cookie-garden-helper.js');
 ```
 
 ## Userscript
