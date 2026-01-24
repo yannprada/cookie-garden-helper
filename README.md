@@ -42,7 +42,7 @@ Want the mods to be loaded automatically everytime you open the game? Well for t
 
 setInterval(() => {
   if (Game.ready) {
-    Game.LoadMod('https://rawgit.com/yannprada/cookie-garden-helper/master/cookie-garden-helper.js');
+    Game.LoadMod('https://cdn.jsdelivr.net/gh/yannprada/cookie-garden-helper@master/cookie-garden-helper.js');
   }
 }, 1000);
 ```
