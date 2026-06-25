@@ -31,7 +31,7 @@
   ],
   "main": "cookie-garden-helper.js",
   "scripts": {
-    "build": "merge.sh && git add cookie-garden-helper.js"
+    "build": "sh ./merge.sh && git add cookie-garden-helper.js"
   },
   "husky": {
     "hooks": {

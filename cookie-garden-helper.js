@@ -1,6 +1,40 @@
 {
 
 const moduleName = 'cookieGardenHelper';
+const modName = 'Cookie Garden Helper';
+const enableStartupLogging = false;
+
+if (!window.cookieGardenHelperDiagnostics) {
+  window.cookieGardenHelperDiagnostics = {
+    sourceEvaluations: 0,
+    initCalls: 0,
+    starts: 0,
+    initialized: false,
+    timerId: null,
+    loggingEnabled: enableStartupLogging,
+  };
+} else if (typeof window.cookieGardenHelperDiagnostics.loggingEnabled === 'undefined') {
+  window.cookieGardenHelperDiagnostics.loggingEnabled = enableStartupLogging;
+}
+const diagnostics = window.cookieGardenHelperDiagnostics;
+diagnostics.sourceEvaluations += 1;
+
+const log = (event, details = {}) => {
+  if (!diagnostics.loggingEnabled) return;
+
+  console.log(`[${modName}] ${event}`, {
+    ...details,
+    sourceEvaluations: diagnostics.sourceEvaluations,
+    initCalls: diagnostics.initCalls,
+    starts: diagnostics.starts,
+    at: new Date().toISOString(),
+  });
+};
+
+log('source evaluated', {
+  href: window.location && window.location.href,
+  gameReady: typeof Game !== 'undefined' && Game.ready,
+});
 
 const capitalize = word => word.charAt(0).toUpperCase() + word.slice(1);
 const uncapitalize = word => word.charAt(0).toLowerCase() + word.slice(1);
@@ -38,19 +72,49 @@ const defaultConfigs = {
   savedPlot: [],
 };
 const configs = {};
-Object.assign(configs, defaultConfigs);
+Object.assign(configs, clone(defaultConfigs));
 let changedConfigs = {};
 
-Game.registerMod('Cookie Garden Helper', {
+const applySavedConfigs = savedConfigs => {
+  changedConfigs = savedConfigs && typeof savedConfigs === 'object' ? savedConfigs : {};
+  Object.assign(configs, clone(defaultConfigs), changedConfigs);
+};
+
+const modApi = {
+  init: () => {
+    log('mod init called');
+  },
   save: () => {
-    Object.assign(configs, changedConfigs);
-    return JSON.stringify(changedConfigs);
+    log('save called', { changedConfigKeys: Object.keys(changedConfigs) });
+    Game.modSaveData[modName] = JSON.stringify(changedConfigs);
+    return Game.modSaveData[modName];
   },
   load: saveString => {
-    changedConfigs = JSON.parse(saveString);
-    Object.assign(configs, changedConfigs);
+    log('load called', { saveLength: saveString ? saveString.length : 0 });
+    if (!saveString) {
+      applySavedConfigs({});
+      return;
+    }
+
+    try {
+      applySavedConfigs(JSON.parse(saveString));
+    } catch (error) {
+      log('load failed', { error: error.message, saveString });
+      applySavedConfigs({});
+    }
   },
-});
+};
+
+if (Game.mods && Game.mods[modName]) {
+  log('registerMod skipped; updating existing mod api');
+  Object.assign(Game.mods[modName], modApi);
+  if (Game.modSaveData && Game.modSaveData[modName]) {
+    Game.mods[modName].load(Game.modSaveData[modName]);
+  }
+} else {
+  log('registerMod called');
+  Game.registerMod(modName, modApi);
+}
 class Garden {
   static get minigame() {
     return Game.Objects.Farm.minigame;
@@ -88,20 +152,33 @@ class Garden {
   }
 
   static clonePlot() {
-    const plot = clone(this.minigame.plot);
-    for (let x = 0; x < 6; x++) {
-      for (let y = 0; y < 6; y++) {
-        // eslint-disable-next-line prefer-destructuring
-        plot[x][y] = this.minigame.plot[x][y][0];
-
-        const seedId = plot[x][y];
+    const plot = [];
+    for (let y = 0; y < 6; y++) {
+      plot[y] = [];
+      for (let x = 0; x < 6; x++) {
+        const tile = this.getTile(x, y);
+        const { seedId } = tile;
         const plant = this.getPlant(seedId);
-        if (plant && !plant.plantable) {
-          plot[x][y] = 0;
-        }
+        plot[y][x] = plant && !plant.plantable ? 0 : seedId;
       }
     }
     return plot;
+  }
+
+  static cropToUnlockedTiles(plot) {
+    const rows = [];
+    for (let y = 0; y < 6; y++) {
+      const row = [];
+      for (let x = 0; x < 6; x++) {
+        if (this.minigame.isTileUnlocked(x, y)) {
+          row.push(plot[y] && typeof plot[y][x] !== 'undefined' ? plot[y][x] : 0);
+        }
+      }
+      if (row.length > 0) {
+        rows.push(row);
+      }
+    }
+    return rows;
   }
 
   static getPlant(id) {
@@ -223,7 +300,7 @@ class Garden {
               this.handleDying(config, plant, x, y);
               break;
             default:
-              console.log(`Unexpected plant stage: ${stage}`);
+              log('Unexpected plant stage', { stage });
           }
         }
       }
@@ -619,10 +696,10 @@ class UI {
     });
 
     doc.elId('cookieGardenHelperPlotIsSaved').onmouseout = event => {
-      Main.handleMouseoutPlotIsSaved(this);
+      Main.handleMouseoutPlotIsSaved(event.currentTarget);
     };
     doc.elId('cookieGardenHelperPlotIsSaved').onmouseover = event => {
-      Main.handleMouseoverPlotIsSaved(this);
+      Main.handleMouseoverPlotIsSaved(event.currentTarget);
     };
   }
 
@@ -631,8 +708,9 @@ class UI {
   }
 
   static buildSavedPlot(savedPlot) {
+    const visiblePlot = Garden.cropToUnlockedTiles(savedPlot);
     return `<div id="cookieGardenHelperTooltip">
-     ${savedPlot
+     ${visiblePlot
        .map(
          row => `<div class="gardenTileRow">
        ${row
@@ -654,6 +732,20 @@ class UI {
 }
 class Main {
   static init() {
+    diagnostics.initCalls += 1;
+    log('Main.init called', {
+      existingTimerId: diagnostics.timerId,
+      gardenActive: Garden.isActive,
+      minigameLoaded: !!Garden.minigame,
+    });
+
+    if (diagnostics.initialized) {
+      log('Main.init skipped; mod already initialized', { timerId: diagnostics.timerId });
+      return;
+    }
+
+    diagnostics.initialized = true;
+
     this.timerInterval = 1000;
     UI.build(configs);
 
@@ -671,33 +763,57 @@ class Main {
   }
 
   static start() {
+    diagnostics.starts += 1;
+    log('Main.start called', {
+      interval: this.timerInterval,
+      existingTimerId: diagnostics.timerId,
+    });
+
+    if (diagnostics.timerId) {
+      log('Main.start skipped; timer already exists', { timerId: diagnostics.timerId });
+      return;
+    }
+
     this.timerId = window.setInterval(() => Garden.run(configs), this.timerInterval);
+    diagnostics.timerId = this.timerId;
+    log('Main.start created timer', { timerId: diagnostics.timerId });
   }
 
   static stop() {
-    window.clearInterval(this.timerId);
+    log('Main.stop called', { timerId: diagnostics.timerId });
+    window.clearInterval(diagnostics.timerId);
+    diagnostics.timerId = null;
+    diagnostics.initialized = false;
   }
 
   static handleChange(key, value) {
-    if (value === defaultConfigs[key].value) {
+    const defaultConfig = defaultConfigs[key];
+    const currentConfig = configs[key];
+    const parsedValue = typeof defaultConfig.value === 'number' ? Number(value) : value;
+
+    if (parsedValue === defaultConfig.value) {
       delete changedConfigs[key];
-      configs[key].value = defaultConfigs[key].value;
+      currentConfig.value = defaultConfig.value;
     } else {
-      changedConfigs[key].value = value;
+      currentConfig.value = parsedValue;
+      changedConfigs[key] = { ...currentConfig, value: parsedValue };
     }
     Game.WriteSave();
   }
 
   static handleToggle(key) {
     const newValue = !configs[key];
-    console.log(key);
-    console.log(configs[key]);
-    console.log(newValue);
-    console.log(defaultConfigs[key]);
+    log('Main.handleToggle called', {
+      key,
+      currentValue: configs[key],
+      newValue,
+      defaultValue: defaultConfigs[key],
+    });
     if (newValue === defaultConfigs[key]) {
       delete changedConfigs[key];
       configs[key] = defaultConfigs[key];
     } else {
+      configs[key] = newValue;
       changedConfigs[key] = newValue;
     }
     Game.WriteSave();
@@ -708,7 +824,9 @@ class Main {
     if (key === 'fillGardenWithSelectedSeed') {
       Garden.fillGardenWithSelectedSeed();
     } else if (key === 'savePlot') {
-      Object.assign(changedConfigs, { savedPlot: Garden.clonePlot() });
+      const savedPlot = Garden.clonePlot();
+      Object.assign(configs, { savedPlot });
+      Object.assign(changedConfigs, { savedPlot });
       UI.labelToggleState('plotIsSaved', true);
     }
     Game.WriteSave();
@@ -725,11 +843,16 @@ class Main {
     }
   }
 }
+log('startup gate reached', {
+  gardenActive: Garden.isActive,
+  minigameLoaded: !!Garden.minigame,
+});
+
 if (Garden.isActive) {
   Main.init();
 } else {
   const msg = "You don't have a garden yet. This mod won't work without it!";
-  console.log(msg);
+  log('garden inactive warning', { message: msg });
   UI.createWarning(msg);
 }
 

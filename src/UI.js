@@ -375,10 +375,10 @@ class UI {
     });
 
     doc.elId('cookieGardenHelperPlotIsSaved').onmouseout = event => {
-      Main.handleMouseoutPlotIsSaved(this);
+      Main.handleMouseoutPlotIsSaved(event.currentTarget);
     };
     doc.elId('cookieGardenHelperPlotIsSaved').onmouseover = event => {
-      Main.handleMouseoverPlotIsSaved(this);
+      Main.handleMouseoverPlotIsSaved(event.currentTarget);
     };
   }
 
@@ -387,8 +387,9 @@ class UI {
   }
 
   static buildSavedPlot(savedPlot) {
+    const visiblePlot = Garden.cropToUnlockedTiles(savedPlot);
     return `<div id="cookieGardenHelperTooltip">
-     ${savedPlot
+     ${visiblePlot
        .map(
          row => `<div class="gardenTileRow">
        ${row
