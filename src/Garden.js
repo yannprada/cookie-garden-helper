@@ -35,19 +35,33 @@ class Garden {
   }
 
   static clonePlot() {
-    const plot = clone(this.minigame.plot);
-    for (let x = 0; x < 6; x++) {
-      for (let y = 0; y < 6; y++) {
-        // eslint-disable-next-line prefer-destructuring
-        plot[x][y] = this.minigame.plot[x][y][0];
-
-        const seedId = plot[x][y];
-        if (this.getPlant(seedId) && !plant.plantable) {
-          plot[x][y] = 0;
-        }
+    const plot = [];
+    for (let y = 0; y < 6; y++) {
+      plot[y] = [];
+      for (let x = 0; x < 6; x++) {
+        const tile = this.getTile(x, y);
+        const { seedId } = tile;
+        const plant = this.getPlant(seedId);
+        plot[y][x] = plant && !plant.plantable ? 0 : seedId;
       }
     }
     return plot;
+  }
+
+  static cropToUnlockedTiles(plot) {
+    const rows = [];
+    for (let y = 0; y < 6; y++) {
+      const row = [];
+      for (let x = 0; x < 6; x++) {
+        if (this.minigame.isTileUnlocked(x, y)) {
+          row.push(plot[y] && typeof plot[y][x] !== 'undefined' ? plot[y][x] : 0);
+        }
+      }
+      if (row.length > 0) {
+        rows.push(row);
+      }
+    }
+    return rows;
   }
 
   static getPlant(id) {
@@ -169,7 +183,7 @@ class Garden {
               this.handleDying(config, plant, x, y);
               break;
             default:
-              console.log(`Unexpected plant stage: ${stage}`);
+              log('Unexpected plant stage', { stage });
           }
         }
       }

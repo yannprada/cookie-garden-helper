@@ -26,16 +26,46 @@ const defaultConfigs = {
   savedPlot: [],
 };
 const configs = {};
-Object.assign(configs, defaultConfigs);
+Object.assign(configs, clone(defaultConfigs));
 let changedConfigs = {};
 
-Game.registerMod('Cookie Garden Helper', {
+const applySavedConfigs = savedConfigs => {
+  changedConfigs = savedConfigs && typeof savedConfigs === 'object' ? savedConfigs : {};
+  Object.assign(configs, clone(defaultConfigs), changedConfigs);
+};
+
+const modApi = {
+  init: () => {
+    log('mod init called');
+  },
   save: () => {
-    Object.assign(configs, changedConfigs);
-    return JSON.stringify(changedConfigs);
+    log('save called', { changedConfigKeys: Object.keys(changedConfigs) });
+    Game.modSaveData[modName] = JSON.stringify(changedConfigs);
+    return Game.modSaveData[modName];
   },
   load: saveString => {
-    changedConfigs = JSON.parse(saveString);
-    Object.assign(configs, changedConfigs);
+    log('load called', { saveLength: saveString ? saveString.length : 0 });
+    if (!saveString) {
+      applySavedConfigs({});
+      return;
+    }
+
+    try {
+      applySavedConfigs(JSON.parse(saveString));
+    } catch (error) {
+      log('load failed', { error: error.message, saveString });
+      applySavedConfigs({});
+    }
   },
-});
+};
+
+if (Game.mods && Game.mods[modName]) {
+  log('registerMod skipped; updating existing mod api');
+  Object.assign(Game.mods[modName], modApi);
+  if (Game.modSaveData && Game.modSaveData[modName]) {
+    Game.mods[modName].load(Game.modSaveData[modName]);
+  }
+} else {
+  log('registerMod called');
+  Game.registerMod(modName, modApi);
+}
